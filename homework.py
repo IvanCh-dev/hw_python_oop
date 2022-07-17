@@ -22,7 +22,7 @@ class InfoMessage:
 class Training:
     """Базовый класс тренировки."""
     M_IN_KM: int = 1000
-    MINS_IN_HOUR = 60
+    MINS_IN_HOUR: int = 60
     LEN_STEP: float = 0.65
 
     def __init__(self,
@@ -55,20 +55,20 @@ class Training:
 
 class Running(Training):
     """Тренировка: бег."""
-    COEFF_CALORIE_1 = 18
-    COEFF_CALORIE_2 = 20
+    COEFF_CALORIE_MULTIPLIES: int = 18
+    COEFF_CALORIE_SUBTRACTS: int = 20
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        return ((self.COEFF_CALORIE_1 * self.get_mean_speed()
-                - self.COEFF_CALORIE_2) * self.weight / self.M_IN_KM
+        return ((self.COEFF_CALORIE_MULTIPLIES * self.get_mean_speed()
+                - self.COEFF_CALORIE_SUBTRACTS) * self.weight / self.M_IN_KM
                 * self.duration * self.MINS_IN_HOUR)
 
 
 class SportsWalking(Training):
     """Тренировка: спортивная ходьба."""
-    COEFF_CALORIE_1 = 0.035
-    COEFF_CALORIE_2 = 0.029
+    COEFF_CALORIE_MULTS_SUMS: float = 0.035
+    COEFF_CALORIE_MULTIPLIES: float = 0.029
 
     def __init__(self,
                  action: int,
@@ -81,16 +81,17 @@ class SportsWalking(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        return ((self.COEFF_CALORIE_1 * self.weight + (self.get_mean_speed()**2
-                // self.height) * self.COEFF_CALORIE_2 * self.weight)
+        return ((self.COEFF_CALORIE_MULTS_SUMS * self.weight
+                + (self.get_mean_speed()**2 // self.height)
+                * self.COEFF_CALORIE_MULTIPLIES * self.weight)
                 * self.duration * self.MINS_IN_HOUR)
 
 
 class Swimming(Training):
     """Тренировка: плавание."""
     LEN_STEP: float = 1.38
-    COEFF_CALORIE_1 = 1.1
-    COEFF_CALORIE_2 = 2
+    COEFF_CALORIE_SUMS: float = 1.1
+    COEFF_CALORIE_MULTIPLIES: int = 2
 
     def __init__(self,
                  action: int,
@@ -105,8 +106,8 @@ class Swimming(Training):
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
-        return ((self.get_mean_speed() + self.COEFF_CALORIE_1)
-                * self.COEFF_CALORIE_2 * self.weight)
+        return ((self.get_mean_speed() + self.COEFF_CALORIE_SUMS)
+                * self.COEFF_CALORIE_MULTIPLIES * self.weight)
 
     def get_mean_speed(self) -> float:
         """Получить среднюю скорость движения."""
@@ -123,8 +124,7 @@ def read_package(workout_type: str, data: List[Union[int, float]]) -> Training:
     }
     if workout_type not in action_types:
         raise Exception('Invalid input data')
-    else:
-        return action_types[workout_type](*data)
+    return action_types[workout_type](*data)
 
 
 def main(training: Training) -> None:
